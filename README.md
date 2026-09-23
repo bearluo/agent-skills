@@ -8,6 +8,7 @@
 | | `weekly-report-from-git` | 从 git 提交生成周报 / 月报 |
 | `devops/` | `ci-cd-design` | CI/CD 流水线设计、提速与排障 |
 | | `local-service-ports` | 本机服务端口登记表，避免多会话抢端口 |
+| | `ssh-remote-hosts` | 用原生 ssh + `~/.ssh/config` 管理远程主机 |
 | `docs/` | `drawing-mermaid-diagrams` | Mermaid 画图（兼容旧版渲染器、防子图重叠） |
 | | `project-layout` | 新仓库目录结构与 `docs/` 体系约定 |
 | | `feishu-minutes-export` | 导出飞书妙记文字记录 |
