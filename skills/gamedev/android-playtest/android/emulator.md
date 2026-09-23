@@ -79,13 +79,13 @@ for m in re.finditer(r'(?:text|content-desc)="([^"]*)"[^>]*?bounds="\[(\d+),(\d+
 
 找按钮别一次滑到底，写个「dump → 找到就 tap，找不到就滑一屏」的循环最省事。
 
-## `playtest.ps1` 是为 my-game 写的
+## 包名与启动入口
 
-脚本里写死了 `emulator-5556` 和默认包 `com.example.mygame`。**拿它测别的 App 时只能借它起模拟器**，启动得自己来：
+`playtest.ps1` 不传 `-Package` 时会用 `aapt2 dump packagename` 从 APK 里读包名，并用 `monkey -p <包名> -c android.intent.category.LAUNCHER 1` 启动。手动启动、或者 App 没有 LAUNCHER 入口时：
 
 ```bash
 adb -s <设备> shell cmd package resolve-activity --brief <包名> | tail -1   # 拿入口
 adb -s <设备> shell am start -n "<包名>/<入口>"
 ```
 
-包名也别想当然 —— 用 `output-metadata.json` 里的 `applicationId`，它常和源码目录名对不上。
+包名别想当然 —— 以 APK 里读出来的、或 `output-metadata.json` 里的 `applicationId` 为准，它常和源码目录名对不上。

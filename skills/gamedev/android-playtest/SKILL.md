@@ -38,19 +38,20 @@ description: Use when the user wants a windowed, player-assisted (human-in-the-l
 
 让用户跑(或你替他跑):
 ```
-powershell -File "<skill目录>\playtest.ps1"
+powershell -File "<skill目录>\playtest.ps1" -Apk <路径>
 ```
 它 windowed 起模拟器(`-gpu host` 有画面)→ 等 boot → 装/更新 APK → 启动游戏 → 后台把 logcat 持续写到**脚本同目录的 `playtest-logcat.txt`**(脚本启动时会打印其绝对路径,tail 那个)。
-- 续上次进度:`-KeepState`;游戏已在设备上:`-NoInstall`;换 APK:`-Apk <路径>` 或设 `$env:PLAYTEST_APK`。
-- 若当前有 headless 的 `emulator-5556` 在跑,先 `& "$env:ANDROID_SDK_ROOT\platform-tools\adb.exe" -s emulator-5556 emu kill` 再开窗口版(同端口)。
+- 参数(都可用环境变量代替):`-Apk`(`PLAYTEST_APK`)、`-Package`(`PLAYTEST_PACKAGE`,不给就从 APK 读)、`-Avd`(`PLAYTEST_AVD`,默认 `playtest_avd`)、`-Port`(`PLAYTEST_PORT`,默认 5556)。续上次进度加 `-KeepState`;已装在设备上加 `-NoInstall`。
+- 设备序列号 `<serial>` = `emulator-<Port>`,脚本开场会打印,下文命令都用它。
+- 若同端口已有 headless 模拟器在跑,先 `& "$env:ANDROID_SDK_ROOT\platform-tools\adb.exe" -s <serial> emu kill` 再开窗口版,或换 `-Port`。
 
 ## 你的辅助工具箱(用户玩,你按需搭手)
 
-Git Bash 里 `ADB="$ANDROID_SDK_ROOT/platform-tools/adb.exe"`,设备恒 `-s emulator-5556`(别碰可能存在的 5554)。
+Git Bash 里 `ADB="$ANDROID_SDK_ROOT/platform-tools/adb.exe"`,设备恒 `-s <serial>`(别碰同时开着的其他模拟器)。
 
-- **「看一下现在」** → `"$ADB" -s emulator-5556 exec-out screencap -p > <scratch>/now.png`,再 Read 那张图,用中文描述当前画面/状态。
+- **「看一下现在」** → `"$ADB" -s <serial> exec-out screencap -p > <scratch>/now.png`,再 Read 那张图,用中文描述当前画面/状态。
 - **「盯日志,有报错叫我」** → `tail`/Read 脚本目录的 `playtest-logcat.txt`(路径见脚本开场打印),过滤 `godot|cocos|FATAL|AndroidRuntime|ERROR|assert|shader`(引擎专属 tag 见其 playbook);发现异常主动打断提示用户。
-- **「帮我刷 X」/重复操作** → 循环 `"$ADB" -s emulator-5556 shell input tap <x> <y>`(坐标从截图估,注意缩放倍率换算回原图);刷完截图确认。
+- **「帮我刷 X」/重复操作** → 循环 `"$ADB" -s <serial> shell input tap <x> <y>`(坐标从截图估,注意缩放倍率换算回原图);刷完截图确认。
 - **验证一次点按是否生效**:`input tap` 后**先 `sleep 0.4` 再截图**(游戏 UI 数值/浮字有一帧延迟,截太快会误判"没变"),并优先读**数值标签/logcat 标志**而非整屏像素比对;确实没反应先诊断(坐标偏?按钮置灰?)再重试,**别靠狂点凑数**。
 - **状态/存档核对** → 需要时用 `adb shell run-as` 或游戏日志里的里程碑行佐证,而非只凭画面。
 - **「记一下这轮」** → 汇总一份简报:玩了什么、发现的问题(带截图路径)、logcat 里的报错、复现步骤、建议。
