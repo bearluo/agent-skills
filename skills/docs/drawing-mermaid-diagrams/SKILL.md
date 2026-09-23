@@ -3,41 +3,41 @@ name: drawing-mermaid-diagrams
 description: Use when creating or editing Mermaid diagrams (architecture/flowchart, sequence, class, state, ER, gantt, gitGraph, mindmap, timeline, pie) — especially to embed in a self-hosted GitLab (e.g. Mermaid 10.7, no ELK) or Feishu/Lark whiteboard, or when subgraph boxes overlap or a diagram renders differently across viewers.
 ---
 
-# Drawing Mermaid Diagrams
+# 画 Mermaid 图
 
-## Overview
+## 概述
 
-Author Mermaid that renders correctly on **this user's real targets** — self-hosted GitLab CE 18.7 and Feishu/Lark whiteboard — not just in a local preview. The target's Mermaid **version** and **layout engine** decide what works. Pick syntax to the target, using the verified facts below; don't re-investigate them.
+写出来的 Mermaid 要在**真实的渲染目标**上正确显示——自建 GitLab CE 18.7 和飞书 / Lark 画板——而不只是本地预览里好看。能用什么语法，取决于目标平台的 Mermaid **版本**和**布局引擎**。按目标平台选语法，直接用下面已验证的结论，不要重新调查。
 
-## Render targets (verified — do not re-investigate)
+## 渲染目标（已验证，不要重新调查）
 
-| Target | What it actually runs | Implications |
+| 目标 | 实际运行的是什么 | 影响 |
 |---|---|---|
-| GitLab (self-hosted) | **18.7.6 CE → bundles Mermaid 10.7.0, no elkjs** | `%%{init}%%` spacing + `classDef` coloring **work — use them**. **ELK is NOT available**: v11 `config:{layout:elk}` doesn't exist in 10.7; v10 `defaultRenderer:elk` is unsupported/unreliable. **Never use ELK.** `architecture-beta` / `block-beta` are v11/v10.9 — **not in 10.7**; build architecture from `flowchart` + subgraphs. |
-| Feishu / Lark whiteboard | **`lark-whiteboard` skill CONVERTS mermaid → native shapes; Feishu does the layout** | Renderer / `%%{init}%%` / elk directives are **no-ops** (the converter ignores them). The same source works; overlap depends on Feishu's own layout. Output via the **`lark-whiteboard`** skill. |
-| VS Code / Typora / Obsidian preview | each bundles **its own** Mermaid version | **NOT authoritative** — differs from GitLab 10.7. Always final-check on the real target. |
+| GitLab（自建） | **18.7.6 CE → 内置 Mermaid 10.7.0，没有 elkjs** | `%%{init}%%` 间距设置和 `classDef` 着色**都能用，要用**。**ELK 不可用**：v11 的 `config:{layout:elk}` 在 10.7 里不存在；v10 的 `defaultRenderer:elk` 不支持 / 不可靠。**永远不要用 ELK。** `architecture-beta` / `block-beta` 分别是 v11 / v10.9 的特性，**10.7 没有**；架构图用 `flowchart` + subgraph 画。 |
+| 飞书 / Lark 画板 | **`lark-whiteboard` skill 把 mermaid 转换成原生图形，由飞书自己布局** | 渲染器 / `%%{init}%%` / elk 指令都是**空操作**（转换器会忽略）。同一份源码可以直接用，会不会重叠取决于飞书自己的布局。通过 **`lark-whiteboard`** skill 输出。 |
+| VS Code / Typora / Obsidian 预览 | 各自内置**自己的** Mermaid 版本 | **不作数**——和 GitLab 10.7 不一样。最终一定要在真实目标上检查。 |
 
-## Default conventions (this user)
+## 默认约定
 
-- **Vertical `flowchart TB`**, and **keep the subgraph group boxes**.
-- Spacing init at the very top (valid in 10.7): `%%{init: {"flowchart": {"nodeSpacing": 70, "rankSpacing": 90}}}%%`
-- **Semantic coloring** via `classDef` (palette below) — works on GitLab 10.7.
-- **Short** edge labels; **directed** edges only (avoid undirected `-.-` / `---`); escape `<`→`&lt;`, `>`→`&gt;`; quote labels containing `()` or `/`; line breaks `<br/>`, never `\n`.
+- **纵向 `flowchart TB`**，并**保留 subgraph 分组框**。
+- 间距 init 放在最顶部（10.7 有效）：`%%{init: {"flowchart": {"nodeSpacing": 70, "rankSpacing": 90}}}%%`
+- 用 `classDef` 做**语义着色**（配色见下）——GitLab 10.7 支持。
+- 连线标签要**短**；只用**有向**连线（避免无向的 `-.-` / `---`）；`<` 转义成 `&lt;`、`>` 转义成 `&gt;`；标签里有 `()` 或 `/` 要加引号；换行用 `<br/>`，不要用 `\n`。
 
-## Fixing overlapping subgraph boxes (the #1 problem)
+## 修复 subgraph 框重叠（头号问题）
 
-Root cause: **two sibling subgraphs placed side-by-side at the same rank** — dagre (the only layout in 10.7) mis-computes cluster bounds and overlaps them. Apply in order:
+根因：**两个同级 subgraph 在同一 rank 上左右并排**——dagre（10.7 唯一的布局引擎）算错了分组框边界，导致它们重叠。按顺序尝试：
 
-1. **Raise `nodeSpacing`** (the horizontal gap between side-by-side clusters) to **100+** in the init directive.
-2. Still overlapping? **Stack the siblings vertically** (one below the other, e.g. an ordering edge between them) instead of side-by-side — OR **ungroup the smaller sibling subgraph**: keep its nodes + color + an emoji tag so it still reads as a group, just without a box (no box → no box overlap).
-3. Do **NOT** rely on `direction LR` inside a subgraph to fix it — Mermaid 10.7 **ignores subgraph `direction` when that subgraph has edges to outside nodes**.
-4. Do **NOT** reach for ELK — unavailable here.
+1. **调大 `nodeSpacing`**（并排分组框之间的水平间距），在 init 指令里设到 **100 以上**。
+2. 还重叠？**把同级 subgraph 改成上下堆叠**（比如在它们之间加一条表示先后的连线），不要左右并排——或者**拆掉较小那个 subgraph 的框**：保留它的节点、颜色，再加一个 emoji 标记，看起来仍是一组，只是没有框（没有框就不会框重叠）。
+3. **不要**指望在 subgraph 里写 `direction LR` 来解决——**当 subgraph 有连到外部节点的边时，Mermaid 10.7 会忽略它的 `direction`**。
+4. **不要**求助 ELK——这里用不了。
 
-## Diagram types
+## 图表类型
 
-Mermaid supports many. For a clean, **10.7-safe** example of each (layered architecture, flowchart, sequence, class, statev2, ER, gantt, gitGraph, mindmap, timeline, pie, quadrant), see [diagram-types.md](diagram-types.md). Pick the type that fits the information: flow/architecture → `flowchart`+subgraphs; interactions over time → `sequenceDiagram`; data model → `erDiagram`; lifecycle → `stateDiagram-v2`; schedule → `gantt`.
+Mermaid 支持很多类型。每种类型的干净、**10.7 安全**示例（分层架构、流程图、时序图、类图、stateDiagram-v2、ER、甘特图、gitGraph、思维导图、时间线、饼图、四象限）见 [diagram-types.md](diagram-types.md)。按信息选类型：流程 / 架构 → `flowchart` + subgraph；随时间的交互 → `sequenceDiagram`；数据模型 → `erDiagram`；生命周期 → `stateDiagram-v2`；排期 → `gantt`。
 
-## Color palette (semantic; works on GitLab 10.7)
+## 配色（语义化；GitLab 10.7 可用）
 
 ```
 classDef client  fill:#0e7490,stroke:#22d3ee,color:#fff;  %% 前端/客户端 青
@@ -48,18 +48,18 @@ classDef ext     fill:#92400e,stroke:#fbbf24,color:#fff;  %% 外部上游   琥�
 classDef store   fill:#1e293b,stroke:#64748b,color:#fff;  %% 存储/CDN   灰
 ```
 
-## Common mistakes
+## 常见错误
 
-| Mistake | Fix |
+| 错误 | 改法 |
 |---|---|
-| Using ELK to "fix overlap" | Unavailable on GitLab 10.7 — raise `nodeSpacing`, or stack/ungroup siblings |
-| Trusting VS Code/Typora preview | Different Mermaid version; verify on GitLab / 飞书 |
-| `architecture-beta` / `block-beta` for an arch diagram | v11/v10.9 — won't render on 10.7; use `flowchart`+subgraphs |
-| Long multi-line edge labels | Shorten — long labels widen clusters and trigger overlap |
-| Undirected `-.-` / `---` edges | Make directed; undirected edges distort dagre ranking |
-| Raw `<`/`>` in labels (e.g. `Foo<T>`) | Escape to `&lt;` / `&gt;` |
-| Relying on subgraph `direction` with external edges | Ignored in 10.7 — don't depend on it |
+| 用 ELK「修复重叠」 | GitLab 10.7 上不可用——调大 `nodeSpacing`，或把同级 subgraph 堆叠 / 拆框 |
+| 相信 VS Code / Typora 预览 | Mermaid 版本不同；到 GitLab / 飞书上验证 |
+| 架构图用 `architecture-beta` / `block-beta` | v11 / v10.9 特性——10.7 渲染不出来；用 `flowchart` + subgraph |
+| 连线标签又长又多行 | 缩短——长标签会撑宽分组框，引发重叠 |
+| 无向连线 `-.-` / `---` | 改成有向；无向连线会打乱 dagre 的分层 |
+| 标签里有裸 `<` / `>`（比如 `Foo<T>`） | 转义成 `&lt;` / `&gt;` |
+| 依赖带外部连线的 subgraph 的 `direction` | 10.7 会忽略——别依赖它 |
 
-## Verify before shipping
+## 交付前验证
 
-Render on the **actual target** — push to GitLab and open the `.md`, or convert via lark-whiteboard for 飞书. Local previews are not proof. **For Feishu output, use the `lark-whiteboard` skill.**
+在**真实目标**上渲染——推到 GitLab 打开那个 `.md`，或者通过 lark-whiteboard 转到飞书。本地预览不算数。**输出到飞书时，用 `lark-whiteboard` skill。**

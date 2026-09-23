@@ -1,12 +1,12 @@
-# Mermaid diagram types — 10.7-safe examples
+# Mermaid 图表类型：10.7 安全示例
 
-One clean example per type. All verified to parse on **Mermaid 10.7** (GitLab CE 18.7). Each is vertical-friendly and uses only stable syntax. Copy, then adapt.
+每种类型一个干净的示例，都已验证能在 **Mermaid 10.7**（GitLab CE 18.7）上解析。都适合纵向排版，只用稳定语法。复制后再改。
 
-> ⚠️ Avoid on 10.7: `architecture-beta` (v11), `block-beta` (v10.9), and any `layout: elk` / `defaultRenderer: elk` directive. For an architecture diagram use **flowchart + subgraphs** (first example).
+> ⚠️ 10.7 上不要用：`architecture-beta`（v11）、`block-beta`（v10.9），以及任何 `layout: elk` / `defaultRenderer: elk` 指令。架构图用 **flowchart + subgraph**（第一个示例）。
 
 ---
 
-## 1. Layered architecture (flowchart + subgraphs) — the default for 架构图
+## 1. 分层架构（flowchart + subgraph）：架构图的默认画法
 
 ```mermaid
 %%{init: {"flowchart": {"nodeSpacing": 70, "rankSpacing": 90}}}%%
@@ -35,7 +35,7 @@ flowchart TB
     class DB store;
 ```
 
-## 2. Plain flowchart (decision flow)
+## 2. 普通流程图（判断流程）
 
 ```mermaid
 flowchart TD
@@ -46,7 +46,7 @@ flowchart TD
     D --> E
 ```
 
-## 3. Sequence diagram (时序/交互)
+## 3. 时序图（交互）
 
 ```mermaid
 sequenceDiagram
@@ -61,7 +61,7 @@ sequenceDiagram
     Note over G: 记录用量到 SQLite
 ```
 
-## 4. Class diagram (类/接口)
+## 4. 类图（类 / 接口）
 
 ```mermaid
 classDiagram
@@ -76,7 +76,7 @@ classDiagram
     Clipdrop --> Meta : returns
 ```
 
-## 5. State diagram (状态机) — use stateDiagram-v2
+## 5. 状态图（状态机）：用 stateDiagram-v2
 
 ```mermaid
 stateDiagram-v2
@@ -88,7 +88,7 @@ stateDiagram-v2
     Lobby --> [*]
 ```
 
-## 6. ER diagram (数据模型)
+## 6. ER 图（数据模型）
 
 ```mermaid
 erDiagram
@@ -104,7 +104,7 @@ erDiagram
     }
 ```
 
-## 7. Gantt (排期)
+## 7. 甘特图（排期）
 
 ```mermaid
 gantt
@@ -117,7 +117,7 @@ gantt
     联调       :         test1, after dev1, 5d
 ```
 
-## 8. Git graph (分支)
+## 8. Git 分支图
 
 ```mermaid
 gitGraph
@@ -130,7 +130,7 @@ gitGraph
     merge feature
 ```
 
-## 9. Mindmap (思维导图) — v9.3+, OK on 10.7
+## 9. 思维导图：v9.3+，10.7 可用
 
 ```mermaid
 mindmap
@@ -146,7 +146,7 @@ mindmap
       自建引擎
 ```
 
-## 10. Timeline (时间线) — v10.1+, OK on 10.7
+## 10. 时间线：v10.1+，10.7 可用
 
 ```mermaid
 timeline
@@ -156,7 +156,7 @@ timeline
     2026-Q3 : 灰度 : 正式发布
 ```
 
-## 11. Pie (占比)
+## 11. 饼图（占比）
 
 ```mermaid
 pie title 后端调用占比
@@ -165,7 +165,7 @@ pie title 后端调用占比
     "免费web" : 15
 ```
 
-## 12. Quadrant (四象限) — v10.3+, OK on 10.7
+## 12. 四象限图：v10.3+，10.7 可用
 
 ```mermaid
 quadrantChart
