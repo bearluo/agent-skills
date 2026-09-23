@@ -1,8 +1,8 @@
 # agent-skills
 
-个人整理的通用 Agent Skill 合集（`SKILL.md` 格式，Claude Code / Codex 等支持 skills 的 agent 均可用），按功能分目录。
+个人整理的通用 Agent Skill 合集（`SKILL.md` 格式，Claude Code / Codex 等支持 skills 的 agent 均可用），放在 `skills/<分类>/<name>/`。
 
-| 目录 | Skill | 用途 |
+| 分类（`skills/` 下） | Skill | 用途 |
 |---|---|---|
 | `git/` | `rebase-merge` | rebase 后 fast-forward 合并，保持线性历史 |
 | | `weekly-report-from-git` | 从 git 提交生成周报 / 月报 |
@@ -20,20 +20,21 @@
 
 ## 安装
 
-Agent 只认 `skills/<name>/SKILL.md` 这一层，所以按需把单个 skill 目录链接进去（改仓库即生效）：
+Agent 只认 `~/.claude/skills/<name>/SKILL.md` 这一层，分类会被拍平。把 skill 目录链接进去即可，改仓库立即生效：
 
 ```powershell
-# Windows（目录 junction，无需管理员）
-New-Item -ItemType Junction -Path "$HOME\.claude\skills\rebase-merge" -Target "<repo>\git\rebase-merge"
+# Windows：一次挂上全部 skill（目录 junction，不需要管理员权限，可以重复跑）
+powershell -File scripts/link.ps1
 ```
 
 ```bash
 # macOS / Linux
-ln -s "<repo>/git/rebase-merge" ~/.claude/skills/rebase-merge
+for d in skills/*/*/; do ln -sfn "$PWD/$d" ~/.claude/skills/"$(basename "$d")"; done
 ```
 
 ## 约定
 
 - `description` 用英文（触发匹配用），正文用中文。
 - 只收**通用** skill：不写具体项目名、内网地址、个人路径；示例用 `my-game`、`<project>` 等占位。
-- 新增 skill 放进对应功能目录，没有合适的就新建一个目录，并更新上表。
+- 新增 skill 放在 `skills/<分类>/<name>/`，没有合适的分类就新建一个；然后重跑挂载命令，并更新上表。
+- 仓库约定的详细说明见 `CLAUDE.md`，目录设计的理由见 `docs/adr/0001-skills-directory-layout.md`。
