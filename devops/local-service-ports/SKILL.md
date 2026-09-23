@@ -8,10 +8,10 @@ description: Use when about to start, launch or run any long-running local servi
 ## 核心
 本机所有会 bind 端口的长驻服务，端口统一登记在一张**跨所有 Claude Code 窗口/会话共享**的表里。起服务前先查表，避免不同会话起服务时抢占同一个端口。
 
-**端口表位置：`~/.claude/skills/local-service-ports\ports.md`**
+**端口表位置：`~/.claude/local-service-ports.md`**（每台机器一份，不进 skill 仓库；不存在就把本 skill 目录下的 `ports.md` 模板拷过去）
 
 ## 起服务前必做
-1. **先读端口表** `ports.md`。
+1. **先读端口表** `~/.claude/local-service-ports.md`。
 2. 表里该服务/项目**已分配过端口** → 直接复用，不要另起新端口。
 3. 没有 → 选一个「表里未占用、且本机当前也没在监听」的端口，确认空闲后**在表里追加一行**登记（端口 / 服务·项目 / 协议 / 状态=`使用中` / 启动命令 / 登记时间 / 备注），再起服务。
 
