@@ -17,6 +17,8 @@
 | `gamedev/` | `android-playtest` | Android 模拟器人机协同试玩 |
 | | `wechat-minigame-cdp` | 用 CDP 验证微信小游戏 |
 | | `funplay-cocos-mcp` | 通过 MCP 驱动 Cocos Creator 3.8 |
+| | `cocos-creator-extension-dev` | Cocos Creator 3.8 扩展开发（importer、mount、Inspector、重载与验收） |
+| | `cocos-render-perf` | Cocos 在 Android 真机上的渲染性能分析与 A/B |
 | `ai-tooling/` | `token-usage-report` | 汇总 Claude Code 历史 token 用量 |
 
 ## 安装
