@@ -43,6 +43,7 @@ Creator 扩展至少会跨越这些上下文：
 | 自定义后缀、聚合 Asset、隐藏依赖、构建依赖、扩展 mount | [references/asset-db-importer.md](references/asset-db-importer.md) |
 | 资源不被识别、Library 字段丢失、`Can not parse this input`、Scene 保存重开或反序列化失败、worker 占位类 | [references/custom-asset-serialization.md](references/custom-asset-serialization.md) |
 | 自定义 Asset Inspector、组件 Inspector、动态枚举下拉、编辑态预览 | [references/custom-inspectors.md](references/custom-inspectors.md) |
+| 场景进程脚本（`execute-scene-script`）、右键 / 顶部菜单、简单面板、首次启动弹窗、拖入层级面板生成节点、多产物写盘顺序、编辑器侧 TS 打包 | [references/editor-ui-and-scene-script.md](references/editor-ui-and-scene-script.md) |
 
 关键决策：
 
@@ -66,6 +67,8 @@ await Editor.Package.enable(extensionPath, true);
 ```
 
 注意：扩展重载不保证 AssetDB worker 重启，Node `require` 缓存也可能继续持有旧 importer。
+
+已知现象：改完扩展没重启时，Inspector 里组件的自定义资源字段可能显示「未知类型」，重启 Creator 即恢复（原因推测是 Asset 类在 worker 和场景进程各注册一份、重载只更新了一边，未验证）。场景进程脚本和菜单同样要重启才生效，见 [references/editor-ui-and-scene-script.md](references/editor-ui-and-scene-script.md)。
 
 **`contributions.asset-db.asset-handler` 是正确的注册方式，但它在 3.8.7 上不是每次都生效，而且失败时完全静默。** asset-db worker 里扩展有两条 enable 路径，同一份配置多次全新启动会随机落到其中一条：
 
