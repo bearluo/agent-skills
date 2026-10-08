@@ -9,6 +9,7 @@
 | `devops/` | `ci-cd-design` | CI/CD 流水线设计、提速与排障 |
 | | `local-service-ports` | 本机服务端口登记表，避免多会话抢端口 |
 | | `ssh-remote-hosts` | 用原生 ssh + `~/.ssh/config` 管理远程主机 |
+| | `filebrowser-cdn` | 用已有 File Browser 为本地产物创建稳定公开下载链接 |
 | `docs/` | `drawing-mermaid-diagrams` | Mermaid 画图（兼容旧版渲染器、防子图重叠） |
 | | `project-layout` | 新仓库目录结构与 `docs/` 体系约定 |
 | | `feishu-minutes-export` | 导出飞书妙记文字记录 |
@@ -23,17 +24,27 @@
 
 ## 安装
 
-Agent 只认 `~/.claude/skills/<name>/SKILL.md` 这一层，分类会被拍平。把 skill 目录链接进去即可，改仓库立即生效：
+Claude Code 从 `~/.claude/skills/<name>/SKILL.md` 加载用户 Skill，Codex 从 `~/.agents/skills/<name>/SKILL.md` 加载；两边的分类都会被拍平。把仓库里的 skill 目录分别链接进去，修改仓库即可同时生效：
 
 ```powershell
-# Windows：一次挂上全部 skill（目录 junction，不需要管理员权限，可以重复跑）
+# Windows：同时维护 Claude/Codex 两套入口（目录 junction，不需要管理员权限，可以重复跑）
 powershell -File scripts/link.ps1
 ```
 
 ```bash
 # macOS / Linux
-for d in skills/*/*/; do ln -sfn "$PWD/$d" ~/.claude/skills/"$(basename "$d")"; done
+mkdir -p ~/.claude/skills ~/.agents/skills
+for d in skills/*/*/; do
+  name="$(basename "$d")"
+  ln -sfn "$PWD/$d" ~/.claude/skills/"$name"
+  case "$name" in
+    codex-imagegen|funplay-cocos-mcp) ;;
+    *) ln -sfn "$PWD/$d" ~/.agents/skills/"$name" ;;
+  esac
+done
 ```
+
+`codex-imagegen` 是 Claude 调度 Codex 出图的适配层；`funplay-cocos-mcp` 依赖当前只在 Claude 配置的 MCP，因此暂不挂入 Codex。其他 Skill 即使读取 `~/.claude` 下的共享状态，也以 Claude 环境为主源并同时提供给 Codex。
 
 ## 约定
 

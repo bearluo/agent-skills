@@ -1,6 +1,6 @@
 > 状态：已接受
 > 日期：2026-09-23
-> 摘要：skill 统一放在 `skills/<分类>/<name>/` 下，用 `scripts/link.ps1` 以 junction 挂到 `~/.claude/skills/<name>`，不做成 plugin。
+> 摘要：skill 统一放在 `skills/<分类>/<name>/` 下，用 `scripts/link.ps1` 以 junction 挂到 Claude/Codex 用户级 skills 目录，不做成 plugin。
 > 依赖：无
 
 # ADR-0001：skill 收进 skills/<分类>/<name>/，用 junction 挂载
@@ -13,7 +13,7 @@
 - 根目录一眼看不出哪些是 skill、哪些是仓库自身的东西。
 - 挂载靠手敲 `New-Item -ItemType Junction`，每新增一个 skill 就要敲一次，移动目录后旧 junction 会悬空。
 
-agent 只认 `~/.claude/skills/<name>/SKILL.md` 这一层，分类只对浏览仓库的人有意义。
+Claude Code 从 `~/.claude/skills/<name>/SKILL.md` 加载，Codex 从 `~/.agents/skills/<name>/SKILL.md` 加载；分类只对浏览仓库的人有意义。
 
 ## 备选方案
 
@@ -26,7 +26,7 @@ agent 只认 `~/.claude/skills/<name>/SKILL.md` 这一层，分类只对浏览�
 
 ## 决策
 
-skill 一律放在 `skills/<分类>/<name>/`，深度固定两层；`<name>` 全仓唯一，并且等于 frontmatter 的 `name`。`scripts/link.ps1` 扫描这一层的 `SKILL.md`，幂等地在 `~/.claude/skills/<name>` 重建 junction；遇到同名实体目录（第三方或公司内网 skill）时跳过，不覆盖。
+skill 一律放在 `skills/<分类>/<name>/`，深度固定两层；`<name>` 全仓唯一，并且等于 frontmatter 的 `name`。`scripts/link.ps1` 扫描这一层的 `SKILL.md`，幂等地在 `~/.claude/skills/<name>` 和 `~/.agents/skills/<name>` 重建 junction；遇到同名实体目录（第三方或公司内网 skill）时跳过，不覆盖。平台定向或尚未完成 Codex 适配的 skill 通过脚本排除列表只挂到 Claude Code。
 
 ## 否决理由
 
@@ -36,7 +36,7 @@ skill 一律放在 `skills/<分类>/<name>/`，深度固定两层；`<name>` 全
 
 ## 代价
 
-- 新机器（或 macOS / Linux）需要跑一次挂载命令；macOS / Linux 的 `ln -s` 写法见 README。
+- 新机器（或 macOS / Linux）需要跑一次挂载命令；macOS / Linux 的 `ln -s` 写法和平台排除项见 README。
 - 分类会被拍平，所以 `<name>` 必须全仓唯一，需要人自己留意。
 
 ## 什么时候该推翻

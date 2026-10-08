@@ -31,8 +31,16 @@ description: Use when the user asks to write / generate a weekly report (周报)
 
 ## 速查
 
+Claude Code：
+
 ```bash
 python3 ~/.claude/skills/weekly-report-from-git/weekly.py [flags]
+```
+
+Codex：
+
+```bash
+python3 ~/.agents/skills/weekly-report-from-git/weekly.py [flags]
 ```
 
 | 参数 | 作用 |
