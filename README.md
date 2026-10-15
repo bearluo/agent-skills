@@ -10,6 +10,7 @@
 | | `local-service-ports` | 本机服务端口登记表，避免多会话抢端口 |
 | | `ssh-remote-hosts` | 用原生 ssh + `~/.ssh/config` 管理远程主机 |
 | | `filebrowser-cdn` | 用已有 File Browser 为本地产物创建稳定公开下载链接 |
+| | `http-latency-probe` | HTTPS 接口分地区延迟、GeoDNS 线路、回源 keep-alive 复用测试 |
 | `docs/` | `drawing-mermaid-diagrams` | Mermaid 画图（兼容旧版渲染器、防子图重叠） |
 | | `project-layout` | 新仓库目录结构与 `docs/` 体系约定 |
 | | `feishu-minutes-export` | 导出飞书妙记文字记录 |
