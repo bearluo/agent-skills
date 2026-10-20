@@ -15,6 +15,7 @@
 | | `project-layout` | 新仓库目录结构与 `docs/` 体系约定 |
 | | `feishu-minutes-export` | 导出飞书妙记文字记录 |
 | `design/` | `pen-design-first` | 改 UI 前先出 .pen 设计稿确认 |
+| | `pencil-mcp-session` | 自己新建 / 打开 / 保存 .pen，接通 Pencil MCP |
 | | `codex-imagegen` | 委派 Codex 生成图片素材 |
 | `gamedev/` | `android-playtest` | Android 模拟器人机协同试玩 |
 | | `wechat-minigame-cdp` | 用 CDP 验证微信小游戏 |

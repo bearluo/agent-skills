@@ -26,7 +26,7 @@ description: Use when about to build or change any UI — a new page or screen, 
 
 1. **先读代码，把现状画准。** 画的是「现在长什么样」+「改成什么样」两版，只画后者的话需求方没法比对，而他脑子里的「现在」经常跟实际不一样。
 2. **画在 .pen 里**（见下）。
-3. **导出 PNG 贴给需求方**（`--export`），不要只给一个文件路径 —— 他不一定装了 Pencil。
+3. **导出 PNG 贴给需求方**（MCP `export_nodes` 或 CLI `--export`），不要只给一个文件路径 —— 他不一定装了 Pencil。
 4. **等他明确点头**。含糊的「嗯」「行吧」不算，要他说清楚哪一版、有没有要改的。
 5. **确认之后才写代码**，写完对着图逐条核对。
 6. **代码改了图要跟着改**，不然三周后那份图比没有更糟 —— 看图的人得先判断哪块还算数。**图跟代码同一个 commit 走。**
@@ -35,18 +35,18 @@ description: Use when about to build or change any UI — a new page or screen, 
 
 CLI：`@pen.dev/cli`（`pen` 命令）。MCP：`mcp__pencil__*`。
 
-**MCP 要求编辑器里先打开一个文件，CLI 不要求** —— 这是选路的唯一依据：
+按改动大小选路：
 
-- **CLI `pen`（默认走这条）**：`pen --out x.pen --prompt "…"` 从零起稿，`--in a.pen --out b.pen` 改稿，`--export x.png --export-scale 2` 导图。
-  它会**再起一个 claude 去画**（贵、细节不完全受控），所以**只用来整块重画**；改一两个节点直接编辑 JSON。
-  不需要任何人操作，也不需要登录。
-- **MCP `mcp__pencil__*`**：要用户先在 Pencil 应用（或 VS Code 扩展）里打开那个 `.pen`，否则一律报
-  `Failed to access file . A file needs to be open in the editor`。而且**这个会话连的是哪个 app 由 MCP server 的启动参数定死**
-  （`--app desktop` 还是 `--app visual_studio_code`），连错了报 `transport not connected to app: …`，
-  会话中途改不了。**别为此卡住，转 CLI。**
+- **MCP `mcp__pencil__*`（默认走这条）**：逐节点改稿、截图、导出。它只能操作 Pencil 桌面端当前打开的文件 ——
+  **新建、打开、保存都由 agent 自己按 skill `pencil-mcp-session` 做，不要让用户去 Pencil 里点。**
+  MCP 的改动不会自动写盘，提交前要保存并核对文件（同见该 skill）。
+  **这个会话连的是哪个 app 由 MCP server 的启动参数定死**（`--app desktop` 还是 `--app visual_studio_code`），会话中途改不了；
+  连错了就别走 MCP：局部改直接编辑 JSON，整块重画走 CLI。
+- **CLI `pen`（只用来整块重画）**：`pen --out x.pen --prompt "…"` 从零起稿，`--in a.pen --out b.pen` 改稿，`--export x.png --export-scale 2` 导图。
+  它会**再起一个 claude 去画**（贵、细节不完全受控），所以只在整屏起稿 / 大改时用。不需要任何人操作。
 
 **.pen 是明文 JSON**（`{version, children:[…]}`，节点有 `id`/`name`/`type`/`content`，隐藏用 `enabled:false`）。
-所以**改一两个节点直接 node 读写就行**，不用为此再起一个 agent —— 只有整块重画才值得走 CLI。
+Pencil 没打开这个文件时，改一两个节点可以直接 node 读写；**应用开着它时别改磁盘上的 JSON**，应用下次保存会用内存里的版本覆盖，改走 MCP。
 （pencil MCP 的文档说它是加密的，实测不是。）
 
 **CLI 不需要登录**：`pen status` 显示 Expired 照样能用，鉴权只管云端 workspace。
